@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Crop Alert System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js with plugins -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-seedling"></i>
+                <span>CropAlert Admin</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="user-details">
+                <div class="user-name" id="adminName">Admin</div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#farmers" class="sidebar-link" data-section="farmers">
+                        <i class="fas fa-users"></i>
+                        <span>Manage Farmers</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#alerts" class="sidebar-link" data-section="alerts">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Weather Alerts</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#analytics" class="sidebar-link" data-section="analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>System Analytics</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#market-timing" class="sidebar-link" data-section="market-timing">
+                        <i class="fas fa-clock"></i>
+                        <span>Market Timing</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#market-prices" class="sidebar-link" data-section="market-prices">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Market Prices</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#reports" class="sidebar-link" data-section="reports">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#backup-recovery" class="sidebar-link" data-section="backup-recovery">
+                        <i class="fas fa-database"></i>
+                        <span>Backup & Recovery</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#settings" class="sidebar-link" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-menu">
+                <button class="user-menu-toggle" onclick="toggleUserMenu()">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" onclick="showProfile()"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#" onclick="showSettings()"><i class="fas fa-cog"></i> Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <div class="location-info">
+                        <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+                        <p id="currentDate"></p>
+                    </div>
+                    <button class="btn btn-primary refresh-btn" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h2 id="welcomeMessage" class="gradient-text-animated">Welcome back, Admin!</h2>
+                        <p id="dashboardSummary">Loading today's summary...</p>
+                    </div>
+                    <div class="welcome-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="totalFarmers">0</span>
+                        <span class="stat-label">Total Farmers</span>
+                        <div class="stat-trend" id="farmersTrend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="activeAlerts">0</span>
+                        <span class="stat-label">Active Alerts</span>
+                        <div class="stat-trend" id="alertsTrend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="weatherRecords">0</span>
+                        <span class="stat-label">Weather Records</span>
+                        <div class="stat-trend" id="weatherTrend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="totalUsers">0</span>
+                        <span class="stat-label">Total Users</span>
+                        <div class="stat-trend" id="usersTrend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="activeUsers">0</span>
+                        <span class="stat-label">Active Users (7d)</span>
+                        <div class="stat-trend" id="activeUsersTrend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Left Column -->
+                <div class="dashboard-column">
+                    <!-- Current Weather Card -->
+                    <div class="current-weather-card">
+                        <div class="weather-display" id="currentWeather">
+                            <div class="loading">Loading weather data...</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="quick-actions-grid">
+                            <a href="#farmers" class="quick-action-card" data-section="farmers">
+                                <div class="quick-action-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <span>Add Farmer</span>
+                            </a>
+                            <a href="#alerts" class="quick-action-card" data-section="alerts">
+                                <div class="quick-action-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <span>Check Weather</span>
+                            </a>
+                            <a href="#analytics" class="quick-action-card" data-section="analytics">
+                                <div class="quick-action-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <span>View Analytics</span>
+                            </a>
+                            <a href="#reports" class="quick-action-card" data-section="reports">
+                                <div class="quick-action-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                    <i class="fas fa-file-download"></i>
+                                </div>
+                                <span>Generate Report</span>
+                            </a>
+                            <a href="#settings" class="quick-action-card" data-section="settings">
+                                <div class="quick-action-icon" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <span>Settings</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="dashboard-column">
+                    <!-- Recent Alerts -->
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-bell"></i> Recent Alerts</h3>
+                            <a href="#alerts" class="widget-link" data-section="alerts">View All <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="recent-alerts-list" id="recentAlertsList">
+                            <div class="loading">Loading recent alerts...</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        </div>
+                        <div class="activity-feed" id="activityFeed">
+                            <div class="loading">Loading activity...</div>
+                        </div>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-server"></i> System Status</h3>
+                        </div>
+                        <div class="system-status-list" id="systemStatus">
+                            <div class="status-item">
+                                <div class="status-indicator status-ok"></div>
+                                <span>API Status</span>
+                                <span class="status-value" id="apiStatus">Checking...</span>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator status-ok"></div>
+                                <span>Database</span>
+                                <span class="status-value" id="dbStatus">Checking...</span>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator status-ok"></div>
+                                <span>Weather Service</span>
+                                <span class="status-value" id="weatherServiceStatus">Checking...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- System Analytics Section -->
+        <section id="analytics" class="content-section">
+            <div class="analytics-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-chart-line"></i> System Analytics</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="refreshAllAnalytics()" title="Refresh All Analytics">
+                            <i class="fas fa-sync-alt"></i> Refresh All
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Performance Metrics Cards -->
+                <div class="performance-metrics-grid">
+                    <div class="metric-card" onclick="openFullScreenAnalytics('performance-metrics')">
+                        <div class="metric-icon" style="font-size: 2rem; color: #667eea; margin-bottom: 0.5rem;">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="metric-value" id="alertResponseRate">-</div>
+                        <div class="metric-label">Alert Response Rate</div>
+                        <div class="metric-expand-hint"><i class="fas fa-expand"></i> Click to view full screen</div>
+                    </div>
+                    <div class="metric-card" onclick="openFullScreenAnalytics('performance-metrics')">
+                        <div class="metric-icon" style="font-size: 2rem; color: #28a745; margin-bottom: 0.5rem;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="metric-value" id="alertAccuracyRate">-</div>
+                        <div class="metric-label">Alert Accuracy</div>
+                        <div class="metric-expand-hint"><i class="fas fa-expand"></i> Click to view full screen</div>
+                    </div>
+                    <div class="metric-card" onclick="openFullScreenAnalytics('performance-metrics')">
+                        <div class="metric-icon" style="font-size: 2rem; color: #17a2b8; margin-bottom: 0.5rem;">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="metric-value" id="systemUptime">-</div>
+                        <div class="metric-label">System Uptime</div>
+                        <div class="metric-expand-hint"><i class="fas fa-expand"></i> Click to view full screen</div>
+                    </div>
+                    <div class="metric-card" onclick="openFullScreenAnalytics('performance-metrics')">
+                        <div class="metric-icon" style="font-size: 2rem; color: #ffc107; margin-bottom: 0.5rem;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="metric-value" id="avgResolutionTime">-</div>
+                        <div class="metric-label">Avg Resolution Time</div>
+                        <div class="metric-expand-hint"><i class="fas fa-expand"></i> Click to view full screen</div>
+                    </div>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('farmersLocationChart')">
+                        <div class="chart-header">
+                            <h4>Farmers by Location</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('farmersLocationChart', 'farmers-by-location')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('farmersLocationChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="farmersLocationChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('alertsTypeChart')">
+                        <div class="chart-header">
+                            <h4>Alerts by Type</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('alertsTypeChart', 'alerts-by-type')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('alertsTypeChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="alertsTypeChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('alertsStatusChart')">
+                        <div class="chart-header">
+                            <h4>Alerts by Status</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('alertsStatusChart', 'alerts-by-status')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('alertsStatusChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="alertsStatusChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('alertsSeverityChart')">
+                        <div class="chart-header">
+                            <h4>Alerts by Severity</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('alertsSeverityChart', 'alerts-by-severity')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('alertsSeverityChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="alertsSeverityChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('weatherTrendsChart')">
+                        <div class="chart-header">
+                            <h4>Weather Trends (7 Days)</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); refreshWeatherTrends()" title="Refresh Weather Trends">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('weatherTrendsChart', 'weather-trends')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('weatherTrendsChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="weatherTrendsChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('userActivityChart')">
+                        <div class="chart-header">
+                            <h4>User Activity</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('userActivityChart', 'user-activity')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('userActivityChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="userActivityChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('cropDistributionChart')">
+                        <div class="chart-header">
+                            <h4>Crop Distribution</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('cropDistributionChart', 'crop-distribution')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('cropDistributionChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="cropDistributionChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('alertTrendsChart')">
+                        <div class="chart-header">
+                            <h4>Alert Trends (30 Days)</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('alertTrendsChart', 'alert-trends')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('alertTrendsChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="alertTrendsChart"></canvas>
+                    </div>
+                    <div class="analytics-card" onclick="openFullScreenAnalytics('alertsByHourChart')">
+                        <div class="chart-header">
+                            <h4>Alerts by Hour of Day</h4>
+                            <div class="chart-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); exportChart('alertsByHourChart', 'alerts-by-hour')" title="Export as PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); openFullScreenAnalytics('alertsByHourChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="alertsByHourChart"></canvas>
+                    </div>
+                    <!-- Method Comparison Box -->
+                    <div class="comparison-backdrop" id="comparisonBackdrop" onclick="toggleMethodComparison()"></div>
+                    <div class="method-comparison-box" id="methodComparisonBox">
+                        <div class="comparison-box-header" onclick="toggleMethodComparison()">
+                            <div class="comparison-box-title">
+                                <i class="fas fa-table"></i>
+                                <div>
+                                    <span>Forecast Methods Comparison</span>
+                                    <small>Click to expand and view tables for both methods</small>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <button class="comparison-refresh-btn" id="comparisonRefreshBtn" onclick="event.stopPropagation(); refreshMethodComparison();" title="Refresh Comparison Data">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="comparison-toggle-btn" id="comparisonToggleBtn" onclick="event.stopPropagation(); toggleMethodComparison();" title="Toggle Comparison">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <button class="comparison-close-btn" id="comparisonCloseBtn" onclick="event.stopPropagation(); toggleMethodComparison();" style="display: none;" title="Close">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="comparison-box-content" id="comparisonBoxContent" style="display: none;">
+                            <div class="comparison-loading" id="comparisonLoading">
+                                <i class="fas fa-spinner fa-spin"></i> Loading comparison data...
+                            </div>
+                            <div class="comparison-tables" id="comparisonTables" style="display: none;">
+                                <div class="comparison-method-section">
+                                    <h5><i class="fas fa-chart-line"></i> Exponential Smoothing Method</h5>
+                                    <div id="exponentialSmoothingTable"></div>
+                                </div>
+                                <div class="comparison-method-section">
+                                    <h5><i class="fas fa-chart-area"></i> Straight Line Method</h5>
+                                    <div id="straightLineTable"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card forecast-card-professional" onclick="openFullScreenAnalytics('forecastChart')">
+                        <div class="forecast-card-header">
+                            <div class="forecast-header-content">
+                                <div class="forecast-title-section">
+                                    <i class="fas fa-chart-line forecast-title-icon"></i>
+                                    <h4 id="forecastTitle">7-Day Weather Records Forecast</h4>
+                                </div>
+                                <p class="forecast-subtitle">Use mouse wheel to zoom, drag to pan</p>
+                            </div>
+                            <div class="forecast-header-actions">
+                                <button class="forecast-action-btn" onclick="event.stopPropagation(); exportChart('forecastChart', 'weather-forecast')" title="Download Chart">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="forecast-action-btn" onclick="event.stopPropagation(); openFullScreenAnalytics('forecastChart')" title="View Full Screen">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="forecast-content-wrapper">
+                            <div class="forecast-sidebar">
+                                <div class="forecast-method-card">
+                                    <div class="method-card-header">
+                                        <i class="fas fa-cog method-icon"></i>
+                                        <span class="method-title">Method Details</span>
+                                    </div>
+                                    <div id="forecastMethodInfo" class="method-info-content">
+                                        <div class="method-item">
+                                            <span class="method-label">Method:</span>
+                                            <span class="method-value">Exponential Smoothing</span>
+                                        </div>
+                                        <div class="method-item">
+                                            <span class="method-label">Variable:</span>
+                                            <span class="method-value">Weather Records Count</span>
+                                        </div>
+                                        <div class="method-item">
+                                            <span class="method-label">Formula:</span>
+                                            <span class="method-value formula-text">(0.40 × actual) + (0.60 × forecasted_previous)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="forecast-controls-card">
+                                    <div class="control-group">
+                                        <label for="forecastMethod" class="control-label">
+                                            <i class="fas fa-filter"></i> Forecast Method
+                                        </label>
+                                        <select id="forecastMethod" onchange="changeForecastMethod()" class="forecast-select">
+                                            <option value="exponential_smoothing">Exponential Smoothing (Weather Records)</option>
+                                            <option value="straight_line">Straight Line (Average Temperature)</option>
+                                        </select>
+                                    </div>
+                                    <button class="forecast-refresh-btn" onclick="event.stopPropagation(); refreshForecast()" title="Refresh Forecast">
+                                        <i class="fas fa-sync-alt"></i>
+                                        <span>Refresh</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="forecast-main-content">
+                                <div class="forecast-chart-container">
+                                    <div class="chart-toolbar">
+                                        <button class="chart-toolbar-btn" onclick="event.stopPropagation(); resetChartZoom()" title="Reset Zoom">
+                                            <i class="fas fa-search-minus"></i> Reset Zoom
+                                        </button>
+                                    </div>
+                                    <canvas id="forecastChart"></canvas>
+                                </div>
+                                
+                                <div class="forecast-insights-panel">
+                                    <div class="insight-card trend-insight">
+                                        <div class="insight-icon trend-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div class="insight-content">
+                                            <span class="insight-label">TREND</span>
+                                            <span class="insight-value" id="trendDirection">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="insight-card confidence-insight">
+                                        <div class="insight-icon confidence-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div class="insight-content">
+                                            <span class="insight-label">CONFIDENCE</span>
+                                            <span class="insight-value" id="forecastConfidence">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="forecast-table-sidebar">
+                                <div class="forecast-table-card">
+                                    <div class="table-card-header">
+                                        <i class="fas fa-table table-icon"></i>
+                                        <span class="table-title">7-Day Forecast Details</span>
+                                    </div>
+                                    <div id="forecastTableContainer" class="forecast-table-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Farmers Management Section -->
+        <section id="farmers" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-users"></i> Farmer Management</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="showAddFarmerModal()">
+                        <i class="fas fa-plus"></i> Add Farmer
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportFarmers()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="farmerSearch" placeholder="Search farmers..." onkeyup="searchFarmers()">
+                </div>
+                <select id="locationFilter" onchange="filterFarmers()">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
+
+            <div class="data-table-container">
+                <table class="data-table" id="farmersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="farmersTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center">Loading farmers...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" id="farmersPagination"></div>
+        </section>
+
+        <!-- Alerts Management Section -->
+        <section id="alerts" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-exclamation-triangle"></i> Weather Alerts Management</h1>
+                <div class="header-actions">
+                    <button class="btn btn-warning" onclick="checkWeatherConditions()">
+                        <i class="fas fa-search"></i> Check Weather
+                    </button>
+                    <button class="btn btn-primary" onclick="runWeatherScheduler()">
+                        <i class="fas fa-sync-alt"></i> Run Scheduler
+                    </button>
+                </div>
+            </div>
+
+            <div class="alerts-management">
+                <div class="alerts-list" id="alertsList">
+                    <div class="loading">Loading alerts...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Timing Optimization Section -->
+        <section id="market-timing" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-clock"></i> Market Timing Optimization</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="refreshMarketTiming()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="market-timing-container" id="marketTimingContainer">
+                <div class="loading">Loading market timing recommendations...</div>
+            </div>
+        </section>
+
+        <!-- Market Prices Management Section -->
+        <section id="market-prices" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-dollar-sign"></i> Market Prices Management</h1>
+                <div class="header-actions">
+                    <select id="adminMarketPricesLocation" class="form-control" style="margin-right: 10px;" onchange="loadAdminMarketPrices()">
+                        <option value="Manila">Manila</option>
+                        <option value="Cebu">Cebu</option>
+                        <option value="Davao">Davao</option>
+                        <option value="Baguio">Baguio</option>
+                        <option value="Iloilo">Iloilo</option>
+                        <option value="Cagayan de Oro">Cagayan de Oro</option>
+                    </select>
+                    <button class="btn btn-success" onclick="showAddPriceModal()">
+                        <i class="fas fa-plus"></i> Add Price
+                    </button>
+                    <button class="btn btn-primary" onclick="loadAdminMarketPrices()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="market-prices-info" id="adminMarketPricesInfo" style="margin-bottom: 1rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3; display: none;">
+                <strong>Last Updated:</strong> <span id="adminMarketPricesUpdatedAt">-</span> | 
+                <strong>Location:</strong> <span id="adminMarketPricesLocationDisplay">-</span> | 
+                <strong>Total Crops:</strong> <span id="adminMarketPricesTotalCrops">-</span>
+            </div>
+
+            <div class="market-prices-filters" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" id="adminMarketPricesSearch" class="form-control" placeholder="Search crops..." style="flex: 1; min-width: 200px;" onkeyup="filterAdminMarketPrices()">
+                <select id="adminMarketPricesSort" class="form-control" style="flex: 1; min-width: 150px;" onchange="sortAdminMarketPrices()">
+                    <option value="name">Sort by Name</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="trend">Sort by Trend</option>
+                </select>
+            </div>
+
+            <div class="market-prices-container" id="adminMarketPricesContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading market prices...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-chart-bar"></i> System Reports</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="generateReport('weather')">
+                        <i class="fas fa-download"></i> Weather Report
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateReport('farmers')">
+                        <i class="fas fa-download"></i> Farmers Report
+                    </button>
+                </div>
+            </div>
+
+            <div class="reports-grid">
+                <div class="report-card">
+                    <h3>Weather Alerts Report</h3>
+                    <p>Summary of all weather alerts and their impact on farmers</p>
+                    <button class="btn btn-primary" onclick="generateReport('alerts')">Generate</button>
+                </div>
+                <div class="report-card">
+                    <h3>Farmer Activity Report</h3>
+                    <p>Analysis of farmer registrations and activity patterns</p>
+                    <button class="btn btn-primary" onclick="generateReport('activity')">Generate</button>
+                </div>
+                <div class="report-card">
+                    <h3>System Usage Report</h3>
+                    <p>Overall system usage statistics and performance metrics</p>
+                    <button class="btn btn-primary" onclick="generateReport('usage')">Generate</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Backup & Recovery Section -->
+        <section id="backup-recovery" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-database"></i> Backup & Recovery</h1>
+                <p>Manage system backups and restore database</p>
+            </div>
+
+            <!-- Backup Status Card -->
+            <div class="backup-status-card">
+                <div class="status-item">
+                    <div class="status-label">Last Backup</div>
+                    <div class="status-value" id="lastBackupTime">Never</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Total Backups</div>
+                    <div class="status-value" id="totalBackups">0</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Disk Usage</div>
+                    <div class="status-value" id="diskUsage">0 B</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Free Space</div>
+                    <div class="status-value" id="freeSpace">-</div>
+                </div>
+            </div>
+
+            <!-- Backup Actions -->
+            <div class="backup-actions">
+                <button class="btn btn-primary" onclick="createBackup()" id="createBackupBtn">
+                    <i class="fas fa-plus"></i> Create Backup Now
+                </button>
+                <button class="btn btn-secondary" onclick="refreshBackupList()">
+                    <i class="fas fa-sync"></i> Refresh List
+                </button>
+            </div>
+
+            <!-- Backup List -->
+            <div class="backup-list-container">
+                <h2>Database Backups</h2>
+                <div class="table-responsive">
+                    <table class="data-table" id="databaseBackupsTable">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Created</th>
+                                <th>Size</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="databaseBackupsBody">
+                            <tr>
+                                <td colspan="4" class="text-center">Loading backups...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 style="margin-top: 2rem;">File Backups</h2>
+                <div class="table-responsive">
+                    <table class="data-table" id="fileBackupsTable">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Created</th>
+                                <th>Size</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fileBackupsBody">
+                            <tr>
+                                <td colspan="4" class="text-center">Loading backups...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-cog"></i> System Settings</h1>
+            </div>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3><i class="fas fa-thermometer-half"></i> Weather Settings</h3>
+                    <div class="setting-item">
+                        <label>Weather API Key:</label>
+                        <input type="text" id="weatherApiKey" placeholder="Enter API key">
+                    </div>
+                    <div class="setting-item">
+                        <label>Default Location:</label>
+                        <input type="text" id="defaultLocation" placeholder="Enter default location">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveWeatherSettings()">Save Settings</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-bell"></i> Alert Settings</h3>
+                    <div class="setting-item">
+                        <label>Temperature Alert Threshold:</label>
+                        <input type="number" id="tempThreshold" placeholder="Temperature threshold">
+                    </div>
+                    <div class="setting-item">
+                        <label>Rainfall Alert Threshold:</label>
+                        <input type="number" id="rainThreshold" placeholder="Rainfall threshold">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveAlertSettings()">Save Settings</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-database"></i> System Settings</h3>
+                    <div class="setting-item">
+                        <label>Data Retention (days):</label>
+                        <input type="number" id="dataRetention" placeholder="Days to keep data">
+                    </div>
+                    <div class="setting-item">
+                        <label>Auto Backup:</label>
+                        <input type="checkbox" id="autoBackup"> Enable automatic backups
+                    </div>
+                    <div class="setting-item">
+                        <label>Max Alerts per Page:</label>
+                        <input type="number" id="maxAlertsPerPage" placeholder="Maximum alerts to display">
+                    </div>
+                    <div class="setting-item">
+                        <label>Max Farmers per Page:</label>
+                        <input type="number" id="maxFarmersPerPage" placeholder="Maximum farmers to display">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSystemSettings()">Save Settings</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-bell"></i> Notification Settings</h3>
+                    <div class="setting-item">
+                        <label>Email Notifications:</label>
+                        <input type="checkbox" id="emailNotifications"> Enable email alerts
+                    </div>
+                    <div class="setting-item">
+                        <label>SMS Notifications:</label>
+                        <input type="checkbox" id="smsNotifications"> Enable SMS alerts
+                    </div>
+                    <div class="setting-item">
+                        <label>Notification Frequency:</label>
+                        <select id="notificationFrequency">
+                            <option value="immediate">Immediate</option>
+                            <option value="hourly">Hourly</option>
+                            <option value="daily">Daily</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveNotificationSettings()">Save Settings</button>
+                </div>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <!-- Add Farmer Modal -->
+    <div id="addFarmerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Farmer</h2>
+                <span class="close" onclick="closeModal('addFarmerModal')">&times;</span>
+            </div>
+            <form id="addFarmerForm">
+                <div class="form-group">
+                    <label for="farmerName">Full Name</label>
+                    <input type="text" id="farmerName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="farmerLocation">Location</label>
+                    <input type="text" id="farmerLocation" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="farmerContact">Contact</label>
+                    <input type="text" id="farmerContact" name="contact">
+                </div>
+                <div class="form-group">
+                    <label for="farmerCrops">Crops</label>
+                    <textarea id="farmerCrops" name="crops" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addFarmerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Farmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Farmer Modal -->
+    <div id="editFarmerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Farmer</h2>
+                <span class="close" onclick="closeModal('editFarmerModal')">&times;</span>
+            </div>
+            <form id="editFarmerForm">
+                <input type="hidden" id="editFarmerId" name="id">
+                <div class="form-group">
+                    <label for="editFarmerUsername">Username</label>
+                    <input type="text" id="editFarmerUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="editFarmerName">Full Name</label>
+                    <input type="text" id="editFarmerName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editFarmerLocation">Location</label>
+                    <input type="text" id="editFarmerLocation" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="editFarmerEmail">Email</label>
+                    <input type="email" id="editFarmerEmail" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="editFarmerPhone">Phone</label>
+                    <input type="text" id="editFarmerPhone" name="phone">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editFarmerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Farmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full Screen Analytics Modal -->
+    <div id="fullScreenAnalyticsModal" class="fullscreen-analytics-modal">
+        <div class="fullscreen-analytics-content">
+            <div class="fullscreen-analytics-header">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                    <h2 id="fullScreenAnalyticsTitle">Analytics</h2>
+                    <div class="zoom-hint">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Use mouse wheel to zoom, drag to pan</span>
+                    </div>
+                </div>
+                <div class="fullscreen-analytics-actions">
+                    <button class="btn-icon" id="fullScreenExportBtn" onclick="exportFullScreenChart()" title="Export as PNG">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn-icon" onclick="closeFullScreenAnalytics()" title="Close (ESC)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="fullscreen-analytics-body" id="fullScreenAnalyticsBody">
+                <!-- Chart or content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Detail Modal -->
+    <div id="alertDetailModal" class="modal">
+        <div class="modal-content alert-detail-modal">
+            <div class="modal-header">
+                <h2 id="alertModalTitle">
+                    <i id="alertModalIcon" class="fas fa-exclamation-triangle"></i>
+                    <span id="alertModalTitleText">Alert Details</span>
+                </h2>
+                <button class="modal-close" onclick="closeAlertModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert-detail-content">
+                    <div class="alert-detail-header">
+                        <div class="alert-severity-badge" id="alertModalSeverity">
+                            <span id="alertModalSeverityText">Medium</span>
+                        </div>
+                        <div class="alert-time-info" id="alertModalTime">
+                            <i class="fas fa-clock"></i>
+                            <span id="alertModalTimeText">Just now</span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-detail-description" id="alertModalDescription">
+                        <p>No description available</p>
+                    </div>
+                    
+                    <div class="alert-detail-meta" id="alertModalMeta">
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span><strong>Type:</strong> <span id="alertModalType">-</span></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span><strong>Status:</strong> <span id="alertModalStatus">-</span></span>
+                        </div>
+                        <div class="meta-item" id="alertModalUrgency" style="display: none;">
+                            <i class="fas fa-bolt"></i>
+                            <span><strong>Urgency:</strong> <span id="alertModalUrgencyText">-</span></span>
+                        </div>
+                        <div class="meta-item" id="alertModalCategory" style="display: none;">
+                            <i class="fas fa-folder"></i>
+                            <span><strong>Category:</strong> <span id="alertModalCategoryText">-</span></span>
+                        </div>
+                        <div class="meta-item" id="alertModalAffectedFarmers" style="display: none;">
+                            <i class="fas fa-users"></i>
+                            <span><strong>Affected Farmers:</strong> <span id="alertModalAffectedFarmersText">-</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-detail-actions">
+                        <button class="btn btn-secondary" onclick="closeAlertModal()">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                        <button class="btn btn-primary" id="alertModalResolveBtn" onclick="resolveAlertFromModal()" style="display: none;">
+                            <i class="fas fa-check"></i> Resolve Alert
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Price Modal -->
+    <div id="addPriceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="addPriceModalTitle"><i class="fas fa-dollar-sign"></i> Add Crop Price</h2>
+                <span class="close" onclick="closeModal('addPriceModal')">&times;</span>
+            </div>
+            <form id="addPriceForm">
+                <input type="hidden" id="editPriceId" name="price_id">
+                <div class="form-group">
+                    <label for="priceCropName">Crop Name *</label>
+                    <input type="text" id="priceCropName" name="crop_name" list="cropList" required>
+                    <datalist id="cropList">
+                        <option value="Rice">
+                        <option value="Corn">
+                        <option value="Tomato">
+                        <option value="Eggplant">
+                        <option value="Okra">
+                        <option value="Squash">
+                        <option value="Pepper">
+                        <option value="Cabbage">
+                        <option value="Wheat">
+                        <option value="Soybeans">
+                        <option value="Onion">
+                        <option value="Garlic">
+                        <option value="Potato">
+                        <option value="Carrot">
+                        <option value="Cucumber">
+                        <option value="String Beans">
+                        <option value="Ampalaya">
+                        <option value="Pechay">
+                        <option value="Kangkong">
+                        <option value="Lettuce">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label for="priceLocation">Location *</label>
+                    <select id="priceLocation" name="location" required>
+                        <option value="Manila">Manila</option>
+                        <option value="Cebu">Cebu</option>
+                        <option value="Davao">Davao</option>
+                        <option value="Baguio">Baguio</option>
+                        <option value="Iloilo">Iloilo</option>
+                        <option value="Cagayan de Oro">Cagayan de Oro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pricePerKg">Price per kg (PHP) *</label>
+                    <input type="number" id="pricePerKg" name="price_per_kg" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="priceDate">Date *</label>
+                    <input type="date" id="priceDate" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="priceDemandLevel">Demand Level</label>
+                    <select id="priceDemandLevel" name="demand_level">
+                        <option value="very_low">Very Low</option>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="very_high">Very High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="priceQualityGrade">Quality Grade</label>
+                    <select id="priceQualityGrade" name="quality_grade">
+                        <option value="commercial">Commercial</option>
+                        <option value="standard" selected>Standard</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPriceModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Price</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Restore Backup Confirmation Modal -->
+    <div id="restoreBackupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirm Restore</h2>
+                <span class="close" onclick="closeModal('restoreBackupModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p><strong>Warning:</strong> Restoring a backup will replace all current database data with the backup data. This action cannot be undone.</p>
+                    <p>A safety backup will be created automatically before restoring.</p>
+                </div>
+                <div class="restore-info">
+                    <p><strong>Backup File:</strong> <span id="restoreFileName"></span></p>
+                    <p><strong>Created:</strong> <span id="restoreFileDate"></span></p>
+                    <p><strong>Size:</strong> <span id="restoreFileSize"></span></p>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="restoreConfirmCheckbox" onchange="document.getElementById('confirmRestoreBtn').disabled = !this.checked"> 
+                        I understand that this will overwrite all current data
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('restoreBackupModal')">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmRestoreBtn" onclick="confirmRestore()" disabled>Restore Database</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api-utils.js"></script>
+    <script src="assets/js/chart-utils.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/admin-app.js"></script>
+    <script src="assets/js/admin-map.js"></script>
+</body>
+</html>

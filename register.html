@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Crop Alert System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-image: url('image/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(45, 80, 22, 0.4);
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 30px,
+                    rgba(255, 255, 255, 0.02) 30px,
+                    rgba(255, 255, 255, 0.02) 60px
+                );
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+            animation: moveBackground 30s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-40px, -40px) rotate(180deg); }
+        }
+
+        .register-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(245, 241, 232, 0.1) 100%);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                0 2px 8px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.5s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(90, 143, 58, 0.4), transparent);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .register-header .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #5a8f3a 0%, #8b6914 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(90, 143, 58, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+            border: 2px solid rgba(244, 164, 96, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .register-header .icon-wrapper i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .register-header h1 {
+            color: #1a202c;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.9);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .register-header p {
+            color: #2d3748;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.625rem;
+            color: #1a202c;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.2px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .form-group label .required {
+            color: #e53e3e;
+            margin-left: 2px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a5568;
+            z-index: 2;
+            transition: color 0.3s ease;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px 14px 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #000000;
+            font-weight: 600;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .form-control::placeholder {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: rgba(90, 143, 58, 0.8);
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 
+                0 0 0 3px rgba(90, 143, 58, 0.2),
+                0 4px 12px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+            color: #000000;
+        }
+
+        .form-control:focus + i,
+        .input-group:has(.form-control:focus) i {
+            color: #2d5016;
+        }
+
+        .password-strength {
+            margin-top: 0.75rem;
+            animation: fadeInUp 0.3s ease-out;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.75rem;
+            border-radius: 8px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .password-strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .password-strength-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .password-strength-fill.weak {
+            width: 25%;
+            background: linear-gradient(90deg, #e53e3e, #fc8181);
+            box-shadow: 0 0 8px rgba(229, 62, 62, 0.4);
+        }
+
+        .password-strength-fill.ok {
+            width: 50%;
+            background: linear-gradient(90deg, #d69e2e, #f6e05e);
+            box-shadow: 0 0 8px rgba(214, 158, 46, 0.4);
+        }
+
+        .password-strength-fill.good {
+            width: 75%;
+            background: linear-gradient(90deg, #3182ce, #63b3ed);
+            box-shadow: 0 0 8px rgba(49, 130, 206, 0.4);
+        }
+
+        .password-strength-fill.strong {
+            width: 100%;
+            background: linear-gradient(90deg, #38a169, #48bb78, #68d391);
+            box-shadow: 0 0 12px rgba(56, 161, 105, 0.6), 0 0 20px rgba(56, 161, 105, 0.3);
+            animation: strongPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes strongPulse {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(56, 161, 105, 0.6), 0 0 20px rgba(56, 161, 105, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 16px rgba(56, 161, 105, 0.8), 0 0 30px rgba(56, 161, 105, 0.5);
+            }
+        }
+
+        .password-strength-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .password-strength-text i {
+            font-size: 0.875rem;
+            animation: pulseIcon 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .password-strength-text.weak {
+            color: #c53030;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+        }
+
+        .password-strength-text.ok {
+            color: #c05621;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+        }
+
+        .password-strength-text.good {
+            color: #2c5282;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+        }
+
+        .password-strength-text.strong {
+            color: #2d5016;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            animation: strongGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes strongGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(56, 161, 105, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 10px rgba(56, 161, 105, 0.6);
+            }
+        }
+
+        .password-strength-label {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: slideInText 0.3s ease-out;
+        }
+
+        @keyframes slideInText {
+            from {
+                opacity: 0;
+                transform: translateX(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .password-requirements {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+            animation: fadeInUp 0.3s ease-out;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .password-requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            color: #2d3748;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .password-requirement-item.met {
+            color: #2d5016;
+            font-weight: 700;
+        }
+
+        .password-requirement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .password-requirement-item.met {
+            color: #38a169;
+            font-weight: 500;
+        }
+
+        .password-requirement-item.met i {
+            color: #38a169;
+            animation: checkBounce 0.5s ease-out;
+        }
+
+        @keyframes checkBounce {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .password-requirement-item i {
+            width: 14px;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #5a8f3a 0%, #8b6914 100%);
+            color: #f5f1e8;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(90, 143, 58, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(90, 143, 58, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #5a8f3a;
+            border: 2px solid #5a8f3a;
+            box-shadow: 0 2px 8px rgba(90, 143, 58, 0.15);
+        }
+
+        .btn-secondary:hover {
+            background: #f5f1e8;
+            box-shadow: 0 4px 12px rgba(90, 143, 58, 0.2);
+            border-color: #8b6914;
+            color: #2d5016;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-link p {
+            color: #2d3748;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .login-link a {
+            color: #2d5016;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .login-link a:hover {
+            color: #8b6914;
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            border-left: 4px solid;
+            font-size: 0.95rem;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(240, 249, 240, 0.9);
+            color: #2d5016;
+            border-color: rgba(90, 143, 58, 0.7);
+            font-weight: 600;
+        }
+
+        .alert-error {
+            background: rgba(254, 245, 243, 0.9);
+            color: #a0452a;
+            border-color: rgba(200, 90, 58, 0.7);
+            font-weight: 600;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #5a8f3a;
+            font-weight: 500;
+            padding: 1rem;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #5a8f3a;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0;
+            transition: color 0.3s ease;
+        }
+
+        .btn-link:hover {
+            color: #8b6914;
+            text-decoration: underline;
+        }
+
+        .btn-link:disabled {
+            color: #a0aec0;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 2rem 1.5rem;
+                border-radius: 20px;
+            }
+
+            .register-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .register-container {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .register-header .icon-wrapper {
+                width: 60px;
+                height: 60px;
+            }
+
+            .register-header .icon-wrapper i {
+                font-size: 1.5rem;
+            }
+
+            .register-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="icon-wrapper">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>Create Your Account</h1>
+            <p>Join the Crop Alert System and stay informed</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fullName">Full Name <span class="required">*</span></label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="fullName" name="fullName" class="form-control" 
+                               placeholder="Enter your full name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username <span class="required">*</span></label>
+                    <div class="input-group">
+                        <i class="fas fa-at"></i>
+                        <input type="text" id="username" name="username" class="form-control" 
+                               placeholder="Choose a username" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" class="form-control" 
+                           placeholder="At least 6 characters" required minlength="6">
+                </div>
+                <div class="password-strength" id="passwordStrength" style="display: none;">
+                    <div class="password-strength-bar">
+                        <div class="password-strength-fill" id="passwordStrengthFill"></div>
+                    </div>
+                    <div class="password-strength-text" id="passwordStrengthText">
+                        <i class="fas fa-shield-alt"></i>
+                        <span class="password-strength-label" id="passwordStrengthLabel"></span>
+                    </div>
+                    <div class="password-requirements" id="passwordRequirements">
+                        <div class="password-requirement-item" id="reqLength">
+                            <i class="fas fa-circle"></i>
+                            <span>At least 8 characters</span>
+                        </div>
+                        <div class="password-requirement-item" id="reqLowercase">
+                            <i class="fas fa-circle"></i>
+                            <span>Contains lowercase letter</span>
+                        </div>
+                        <div class="password-requirement-item" id="reqUppercase">
+                            <i class="fas fa-circle"></i>
+                            <span>Contains uppercase letter</span>
+                        </div>
+                        <div class="password-requirement-item" id="reqNumber">
+                            <i class="fas fa-circle"></i>
+                            <span>Contains number</span>
+                        </div>
+                        <div class="password-requirement-item" id="reqSpecial">
+                            <i class="fas fa-circle"></i>
+                            <span>Contains special character</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" class="form-control" 
+                               placeholder="your.email@example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number <small style="color: #a0aec0; font-weight: normal;">(Optional)</small></label>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" name="phone" class="form-control" 
+                               placeholder="+63 9XX XXX XXXX">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location <span class="required">*</span></label>
+                <div class="input-group">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="location" name="location" class="form-control" 
+                           required placeholder="e.g., Manila, Philippines">
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="registerBtn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i> Creating your account...
+            </div>
+        </form>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="login.html"><i class="fas fa-sign-in-alt"></i> Sign in here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Form submission
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(document.getElementById('registerForm'));
+            const registerBtn = document.getElementById('registerBtn');
+            const loading = document.getElementById('loading');
+            const alert = document.getElementById('alert');
+            
+            registerBtn.disabled = true;
+            registerBtn.style.display = 'none';
+            loading.style.display = 'block';
+            alert.style.display = 'none';
+            
+            try {
+                const response = await fetch('api/auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'register',
+                        username: formData.get('username'),
+                        password: formData.get('password'),
+                        full_name: formData.get('fullName'),
+                        email: formData.get('email'),
+                        phone: formData.get('phone'),
+                        location: formData.get('location')
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Registration successful! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    showAlert(data.message || 'Registration failed. Please try again.', 'error');
+                    registerBtn.disabled = false;
+                    registerBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('Registration failed. Please try again.', 'error');
+                registerBtn.disabled = false;
+                registerBtn.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        });
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.innerHTML = message.replace(/\n/g, '<br>');
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            if (password.length === 0) {
+                return { 
+                    level: 'none', 
+                    strength: 0,
+                    requirements: {
+                        length: false,
+                        lowercase: false,
+                        uppercase: false,
+                        number: false,
+                        special: false
+                    }
+                };
+            }
+
+            // Check individual requirements
+            const hasLength = password.length >= 8;
+            const hasLowercase = /[a-z]/.test(password);
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+
+            // Calculate strength score (more rigorous)
+            let strength = 0;
+            
+            // Length scoring (more weight for longer passwords)
+            if (password.length >= 8) strength += 1;
+            if (password.length >= 12) strength += 2;
+            if (password.length >= 16) strength += 2;
+            
+            // Character variety (all must be present for strong)
+            if (hasLowercase) strength += 1;
+            if (hasUppercase) strength += 1;
+            if (hasNumber) strength += 1;
+            if (hasSpecial) strength += 1;
+            
+            // Bonus for complexity
+            const uniqueChars = new Set(password).size;
+            if (uniqueChars >= password.length * 0.7) strength += 1; // High uniqueness
+            if (password.length >= 10 && hasLowercase && hasUppercase && hasNumber && hasSpecial) strength += 1;
+
+            // Determine level (more strict requirements for "strong")
+            let level, label, icon;
+            const metRequirements = [hasLength, hasLowercase, hasUppercase, hasNumber, hasSpecial].filter(Boolean).length;
+            
+            if (strength <= 2 || password.length < 6) {
+                level = 'weak';
+                label = 'Weak';
+                icon = 'fa-exclamation-triangle';
+            } else if (strength <= 4 || metRequirements < 3) {
+                level = 'ok';
+                label = 'Ok';
+                icon = 'fa-check-circle';
+            } else if (strength <= 6 || metRequirements < 5) {
+                level = 'good';
+                label = 'Good';
+                icon = 'fa-shield-alt';
+            } else {
+                // Strong requires: length >= 8, all character types, and good complexity
+                if (hasLength && hasLowercase && hasUppercase && hasNumber && hasSpecial && password.length >= 8) {
+                    level = 'strong';
+                    label = 'Strong';
+                    icon = 'fa-shield-check';
+                } else {
+                    level = 'good';
+                    label = 'Good';
+                    icon = 'fa-shield-alt';
+                }
+            }
+
+            return { 
+                level, 
+                strength, 
+                label, 
+                icon,
+                requirements: {
+                    length: hasLength,
+                    lowercase: hasLowercase,
+                    uppercase: hasUppercase,
+                    number: hasNumber,
+                    special: hasSpecial
+                }
+            };
+        }
+
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const passwordStrength = document.getElementById('passwordStrength');
+        const passwordStrengthFill = document.getElementById('passwordStrengthFill');
+        const passwordStrengthText = document.getElementById('passwordStrengthText');
+        const passwordStrengthLabel = document.getElementById('passwordStrengthLabel');
+        const passwordRequirements = document.getElementById('passwordRequirements');
+
+        function updateRequirementItem(elementId, met) {
+            const element = document.getElementById(elementId);
+            if (met) {
+                element.classList.add('met');
+                const icon = element.querySelector('i');
+                icon.className = 'fas fa-check-circle';
+            } else {
+                element.classList.remove('met');
+                const icon = element.querySelector('i');
+                icon.className = 'fas fa-circle';
+            }
+        }
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            
+            if (password.length === 0) {
+                passwordStrength.style.display = 'none';
+                return;
+            }
+
+            passwordStrength.style.display = 'block';
+            const result = checkPasswordStrength(password);
+
+            // Update fill bar
+            passwordStrengthFill.className = `password-strength-fill ${result.level}`;
+            
+            // Update text and icon
+            passwordStrengthText.className = `password-strength-text ${result.level}`;
+            passwordStrengthLabel.textContent = result.label;
+            
+            const iconElement = passwordStrengthText.querySelector('i');
+            iconElement.className = `fas ${result.icon}`;
+
+            // Update requirements checklist
+            updateRequirementItem('reqLength', result.requirements.length);
+            updateRequirementItem('reqLowercase', result.requirements.lowercase);
+            updateRequirementItem('reqUppercase', result.requirements.uppercase);
+            updateRequirementItem('reqNumber', result.requirements.number);
+            updateRequirementItem('reqSpecial', result.requirements.special);
+        });
+    </script>
+</body>
+</html>

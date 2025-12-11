@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - Crop Alert System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-seedling"></i>
+                <span>CropAlert</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <div class="user-name" id="farmerName">Farmer</div>
+                <div class="user-role">Farmer</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#crops" class="sidebar-link" data-section="crops">
+                        <i class="fas fa-leaf"></i>
+                        <span>My Crops</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#alerts" class="sidebar-link" data-section="alerts">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Alerts</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#weather-history" class="sidebar-link" data-section="weather-history">
+                        <i class="fas fa-history"></i>
+                        <span>Weather History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#market-timing" class="sidebar-link" data-section="market-timing">
+                        <i class="fas fa-clock"></i>
+                        <span>Market Timing</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#market-prices" class="sidebar-link" data-section="market-prices">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Market Prices</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#harvest-prescription" class="sidebar-link" data-section="harvest-prescription">
+                        <i class="fas fa-cut"></i>
+                        <span>Harvest Decisions</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#profile" class="sidebar-link" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-menu">
+                <button class="user-menu-toggle" onclick="toggleUserMenu()">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" onclick="showProfile()"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#" onclick="showSettings()"><i class="fas fa-cog"></i> Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <div class="location-info">
+                        <h2 id="userGreeting" class="user-greeting gradient-text-animated">Welcome back!</h2>
+                        <h1><i class="fas fa-map-marker-alt"></i> <span id="farmerLocation">Your Location</span></h1>
+                        <p id="currentDate"></p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="location-search-container">
+                            <div class="search-input-wrapper">
+                                <input type="text" id="locationSearchInput" class="location-search-input" placeholder="Search location (e.g., Cebu, Davao, Baguio)" />
+                                <button class="btn btn-search" onclick="searchLocationWeather()" title="Search Weather">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <button id="resetLocationBtn" class="btn btn-secondary reset-location-btn" onclick="resetToMyLocation()" style="display: none;" title="Back to My Location">
+                                <i class="fas fa-home"></i> My Location
+                            </button>
+                        </div>
+                        <button class="btn btn-primary refresh-btn" onclick="refreshWeather()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Weather Card -->
+            <div class="current-weather-card">
+                <div class="weather-display" id="currentWeather">
+                    <div class="loading">Loading weather data...</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Widget -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="quick-actions-grid">
+                    <a href="#" class="quick-action-card" onclick="showAddCropModal(); return false;">
+                        <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span>Add Crop</span>
+                    </a>
+                    <a href="#alerts" class="quick-action-card" data-section="alerts">
+                        <div class="quick-action-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <span>View Alerts</span>
+                    </a>
+                    <a href="#market-timing" class="quick-action-card" data-section="market-timing">
+                        <div class="quick-action-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span>Market Timing</span>
+                    </a>
+                    <a href="#harvest-prescription" class="quick-action-card" data-section="harvest-prescription">
+                        <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <span>Harvest Plans</span>
+                    </a>
+                    <a href="#weather-history" class="quick-action-card" data-section="weather-history">
+                        <div class="quick-action-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <span>Weather History</span>
+                    </a>
+                    <a href="#profile" class="quick-action-card" data-section="profile">
+                        <div class="quick-action-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        <span>Profile Settings</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="main-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Weather Forecast -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-alt"></i> 5-Day Forecast</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="forecast-list" id="weatherForecast">
+                                <div class="loading">Loading forecast...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Alerts -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Weather Alerts</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="alerts-list" id="activeAlerts">
+                                <div class="no-alerts">No active alerts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Crop Recommendations -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-seedling"></i> Recommended Crops</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="crop-recommendations" id="cropRecommendations">
+                                <div class="loading">Loading recommendations...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Tips -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-lightbulb"></i> Farming Tips</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="farming-tips" id="farmingTips">
+                                <div class="tip-item">
+                                    <i class="fas fa-sun"></i>
+                                    <div class="tip-content">
+                                        <h4>Sunny Weather</h4>
+                                        <p>Perfect for planting tomatoes and peppers. Ensure adequate watering.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-item">
+                                    <i class="fas fa-cloud-rain"></i>
+                                    <div class="tip-content">
+                                        <h4>Rainy Season</h4>
+                                        <p>Great time for rice and corn. Check drainage systems.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-item">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    <div class="tip-content">
+                                        <h4>Temperature</h4>
+                                        <p>Monitor soil temperature for optimal seed germination.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Crops Section -->
+        <section id="crops" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-leaf"></i> My Crops</h1>
+                <button class="btn btn-primary" onclick="showAddCropModal()">
+                    <i class="fas fa-plus"></i> Add Crop
+                </button>
+            </div>
+
+            <div class="crops-grid" id="cropsGrid">
+                <div class="no-crops" id="noCropsMessage" style="display: none;">
+                    <div class="no-crops-content">
+                        <i class="fas fa-seedling"></i>
+                        <h3>No crops added yet</h3>
+                        <p>Start by adding your first crop to track its progress and get personalized recommendations.</p>
+                        <button class="btn btn-primary" onclick="showAddCropModal()">
+                            <i class="fas fa-plus"></i> Add Your First Crop
+                        </button>
+                    </div>
+                </div>
+                <div class="loading" id="cropsLoading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading your crops...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Section -->
+        <section id="alerts" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-exclamation-triangle"></i> Weather Alerts</h1>
+            </div>
+
+            <div class="alerts-container">
+                <div class="loading">Loading weather alerts...</div>
+            </div>
+        </section>
+
+        <!-- Weather History Section -->
+        <section id="weather-history" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-history"></i> Weather History</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="app.loadWeatherHistory('all')" id="loadAllHistoryBtn">
+                        <i class="fas fa-list"></i> Load All History
+                    </button>
+                    <button class="btn btn-primary" onclick="app.refreshWeatherHistory()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="weather-history-info" id="weatherHistoryInfo" style="margin-bottom: 1rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3; display: none;">
+                <strong>Total Alerts:</strong> <span id="totalAlertsCount">-</span> (showing <span id="displayedAlertsCount">-</span>)
+            </div>
+
+            <div class="weather-history-filters" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <select id="historyStatusFilter" class="form-control" style="flex: 1; min-width: 150px;" onchange="app.filterWeatherHistory()">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select id="historySeverityFilter" class="form-control" style="flex: 1; min-width: 150px;" onchange="app.filterWeatherHistory()">
+                    <option value="">All Severity</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <input type="number" id="historyLimitInput" class="form-control" placeholder="Limit (default: 500)" style="flex: 1; min-width: 150px;" value="500" onchange="app.filterWeatherHistory()">
+            </div>
+
+            <div class="alerts-container" id="weatherHistoryContainer">
+                <div class="loading">Loading weather history...</div>
+            </div>
+
+            <div id="weatherHistoryPagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;"></div>
+        </section>
+
+        <!-- Market Timing Optimization Section -->
+        <section id="market-timing" class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Market Timing Optimization</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="refreshMarketTiming()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="market-timing-container" id="marketTimingContainer">
+                <div class="loading">Loading market timing recommendations...</div>
+            </div>
+        </section>
+
+        <!-- Market Prices Section -->
+        <section id="market-prices" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-dollar-sign"></i> Market Prices</h1>
+                <div class="header-actions">
+                    <select id="marketPricesLocation" class="form-control" style="margin-right: 10px;" onchange="loadMarketPrices()">
+                        <option value="Manila">Manila</option>
+                        <option value="Cebu">Cebu</option>
+                        <option value="Davao">Davao</option>
+                        <option value="Baguio">Baguio</option>
+                        <option value="Iloilo">Iloilo</option>
+                        <option value="Cagayan de Oro">Cagayan de Oro</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadMarketPrices()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="market-prices-info" id="marketPricesInfo" style="margin-bottom: 1rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3; display: none;">
+                <strong>Last Updated:</strong> <span id="marketPricesUpdatedAt">-</span> | 
+                <strong>Location:</strong> <span id="marketPricesLocationDisplay">-</span> | 
+                <strong>Total Crops:</strong> <span id="marketPricesTotalCrops">-</span>
+            </div>
+
+            <div class="market-prices-filters" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" id="marketPricesSearch" class="form-control" placeholder="Search crops..." style="flex: 1; min-width: 200px;" onkeyup="filterMarketPrices()">
+                <select id="marketPricesSort" class="form-control" style="flex: 1; min-width: 150px;" onchange="sortMarketPrices()">
+                    <option value="name">Sort by Name</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="trend">Sort by Trend</option>
+                </select>
+            </div>
+
+            <div class="market-prices-container" id="marketPricesContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading market prices...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Harvest Decision Prescription Section -->
+        <section id="harvest-prescription" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-cut"></i> Harvest Decision Prescriptions</h1>
+                <button class="btn btn-primary" onclick="app.loadHarvestPrescriptions(true)">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+
+            <div class="harvest-prescriptions-container" id="harvestPrescriptionsContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Analyzing your crops and generating harvest recommendations...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="content-section">
+            <div class="section-header">
+                <h1><i class="fas fa-user"></i> My Profile</h1>
+                <button class="btn btn-primary" onclick="editProfile()">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+            </div>
+
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileName">Farmer Name</h2>
+                            <p id="profileLocation">Location</p>
+                            <p id="profileEmail">Email</p>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <label>Username:</label>
+                            <span id="profileUsername">username</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Phone:</label>
+                            <span id="profilePhone">Phone number</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <!-- Add Crop Modal -->
+    <div id="addCropModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Crop</h2>
+                <span class="close" onclick="closeModal('addCropModal')">&times;</span>
+            </div>
+            <form id="addCropForm">
+                <div class="form-group">
+                    <label for="cropName">Crop Name *</label>
+                    <input type="text" id="cropName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="cropVariety">Variety</label>
+                    <input type="text" id="cropVariety" name="variety" placeholder="e.g., Jasmine, Cherry, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="cropArea">Area (hectares) *</label>
+                    <input type="number" id="cropArea" name="area" step="0.1" min="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="plantingDate">Planting Date *</label>
+                    <input type="date" id="plantingDate" name="planting_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="expectedHarvestDate">Expected Harvest Date</label>
+                    <input type="date" id="expectedHarvestDate" name="expected_harvest_date">
+                </div>
+                <div class="form-group">
+                    <label for="cropNotes">Notes</label>
+                    <textarea id="cropNotes" name="notes" rows="3" placeholder="Any additional notes about this crop..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addCropModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Crop</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Crop Modal -->
+    <div id="editCropModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Crop</h2>
+                <span class="close" onclick="closeModal('editCropModal')">&times;</span>
+            </div>
+            <form id="editCropForm">
+                <input type="hidden" id="editCropId" name="crop_id">
+                <div class="form-group">
+                    <label for="editCropName">Crop Name *</label>
+                    <input type="text" id="editCropName" name="crop_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCropVariety">Variety</label>
+                    <input type="text" id="editCropVariety" name="variety" placeholder="e.g., Jasmine, Cherry, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="editCropArea">Area (hectares) *</label>
+                    <input type="number" id="editCropArea" name="area_hectares" step="0.1" min="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPlantingDate">Planting Date *</label>
+                    <input type="date" id="editPlantingDate" name="planting_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="editExpectedHarvestDate">Expected Harvest Date</label>
+                    <input type="date" id="editExpectedHarvestDate" name="expected_harvest_date">
+                </div>
+                <div class="form-group">
+                    <label for="editCropStatus">Status</label>
+                    <select id="editCropStatus" name="status">
+                        <option value="planted">Planted</option>
+                        <option value="growing">Growing</option>
+                        <option value="harvesting">Harvesting</option>
+                        <option value="harvested">Harvested</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editCropHealth">Health Status</label>
+                    <select id="editCropHealth" name="health_status">
+                        <option value="excellent">Excellent</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                        <option value="poor">Poor</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editCropNotes">Notes</label>
+                    <textarea id="editCropNotes" name="notes" rows="3" placeholder="Any additional notes about this crop..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editCropModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Crop</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <span class="close" onclick="closeModal('editProfileModal')">&times;</span>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="editFullName">Full Name</label>
+                    <input type="text" id="editFullName" name="full_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Phone</label>
+                    <input type="text" id="editPhone" name="phone">
+                </div>
+                <div class="form-group">
+                    <label for="editLocation">Location</label>
+                    <input type="text" id="editLocation" name="location" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert Detail Modal -->
+    <div id="alertDetailModal" class="modal">
+        <div class="modal-content alert-detail-modal">
+            <div class="modal-header">
+                <h2 id="alertModalTitle">
+                    <i id="alertModalIcon" class="fas fa-exclamation-triangle"></i>
+                    <span id="alertModalTitleText">Alert Details</span>
+                </h2>
+                <button class="modal-close" onclick="closeAlertModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert-detail-content">
+                    <div class="alert-detail-header">
+                        <div class="alert-severity-badge" id="alertModalSeverity">
+                            <span id="alertModalSeverityText">Medium</span>
+                        </div>
+                        <div class="alert-time-info" id="alertModalTime">
+                            <i class="fas fa-clock"></i>
+                            <span id="alertModalTimeText">Just now</span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-detail-description" id="alertModalDescription">
+                        <p>No description available</p>
+                    </div>
+                    
+                    <div class="alert-detail-meta" id="alertModalMeta" style="display: none;">
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span><strong>Type:</strong> <span id="alertModalType">-</span></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span><strong>Status:</strong> <span id="alertModalStatus">-</span></span>
+                        </div>
+                        <div class="meta-item" id="alertModalUrgency" style="display: none;">
+                            <i class="fas fa-bolt"></i>
+                            <span><strong>Urgency:</strong> <span id="alertModalUrgencyText">-</span></span>
+                        </div>
+                        <div class="meta-item" id="alertModalCategory" style="display: none;">
+                            <i class="fas fa-folder"></i>
+                            <span><strong>Category:</strong> <span id="alertModalCategoryText">-</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-detail-actions">
+                        <button class="btn btn-primary" onclick="closeAlertModal()">
+                            <i class="fas fa-check"></i> Understood
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api-utils.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/farmer-app.js"></script>
+</body>
+</html>
